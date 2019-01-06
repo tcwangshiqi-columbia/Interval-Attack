@@ -6,7 +6,6 @@ Note that symbolic interval analysis is a sound network output approximation met
 
 
 
-
 ## Downloading
 
 ```
@@ -18,9 +17,6 @@ git clone https://github.com/tcwangshiqi-columbia/Interval-Attack
 ```
 python attack2.py
 ```
-
-
-### Custom attacks
 
 
 
