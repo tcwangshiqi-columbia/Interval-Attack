@@ -319,7 +319,7 @@ if __name__ == '__main__':
 	parser.add_argument('--method', type=int, default=INTERVAL_EX1)
 	parser.add_argument('--baseline', action='store_true', default=False)
 	parser.add_argument('--im', type=int, default=INTERVAL_BLOB)
-	parser.add_argument('--random', type=int, default=10)
+	parser.add_argument('--random', type=int, default=50)
 	# epsilon used for estimating the interval gradient
 	parser.add_argument('--estep', type=float, default=0.01)
 	# batch_size that is used for calculating symbolic propagation
@@ -332,28 +332,6 @@ if __name__ == '__main__':
 	parser.add_argument('--estep_decay', type=float, default=0.94)
 	parser.add_argument('--check', action='store_true', default=True)
 	args = parser.parse_args()
-	'''
-	model = Model()
-	mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
-	with open('config.json') as config_file:
-		config = json.load(config_file)
-
-	x = mnist.test.images[:args.batch_size*args.batches]
-	y = mnist.test.labels[:args.batch_size*args.batches]
-	#x = mnist.test.images[20:21]
-	#y = mnist.test.labels[20:21]
-
-
-	if(args.baseline):
-		PATH = "models/adv_trained/checkpoint.ckpt"
-	else:
-		PATH = "models/adv_trained/adv_model.ckpt"
-
-	model_file = PATH
-	if model_file is None:
-		print('No model found')
-		sys.exit()
-	'''
 
 
 	with open('config.json') as config_file:
@@ -391,12 +369,7 @@ if __name__ == '__main__':
 	saver = tf.train.Saver()
 
 	model_file = tf.train.latest_checkpoint(model_dir)
-
-	'''
-	if(args.method == INTERVAL_EX1):
-		args.batches = args.batches*args.batch_size
-		args.batch_size = 1
-	'''
+	
 
 	if(args.method==INTERVAL_EX1):
 		with tf.Session() as sess:
