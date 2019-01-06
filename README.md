@@ -1,6 +1,10 @@
 # Interval Attack
 
-Currently, most of the first-order attacks like PGD, CW or DAA maximize customized loss function to locate adversarial examples. And all of them repeat their attack algorithm on random starting points. We propose a new first-order attack that leverages symbolic interval analysis to locate interesting subspace (i.e., more chance to have adversaria examples) and then maximize the loss function. We found our interval attacks can provide outstanding attack success rate on popular defense models. More details of our interval attacks can be found at https://arxiv.org/abs/1811.02625.  
+Currently, most of the first-order attacks like PGD, CW or DAA maximize customized loss function to locate adversarial examples. And all of them repeat their attack algorithm on random starting points. We propose a new first-order attack that leverages symbolic interval analysis to locate interesting subspace (i.e., more chance to have adversarial examples) and then maximize the loss function. We found our interval attacks can provide outstanding attack success rate on popular defense models. More details of our interval attacks can be found at https://arxiv.org/abs/1811.02625.  
+
+Note that symbolic interval analysis is a sound network output approximation method given allowable input ranges. The details of symbolic interval analysis can be found in our [Neurify](https://arxiv.org/abs/1809.08098) accepted in NeurIPS 2018 and [ReluVal](https://www.cs.columbia.edu/~tcwangshiqi/docs/reluval.pdf) accepted in Usenix Security 2018.
+
+
 
 
 ## Downloading
