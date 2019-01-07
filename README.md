@@ -15,7 +15,7 @@ git clone https://github.com/tcwangshiqi-columbia/Interval-Attack
 ## Running 
 
 ```
-python attack2.py
+python interval_attack.py
 ```
 
 
