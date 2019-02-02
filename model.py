@@ -36,7 +36,7 @@ class Model(object):
 
 		h_pool2_flat = tf.reshape(self.h_pool2, [-1, 7 * 7 * 64])
 		h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
-
+		self.h_fc1 = h_fc1
 		# output layer
 		self.W_fc2 = self._weight_variable([1024,10])
 		self.b_fc2 = self._bias_variable([10])

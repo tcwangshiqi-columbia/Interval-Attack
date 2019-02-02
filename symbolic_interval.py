@@ -17,14 +17,16 @@ tmp = tf.constant(0)
 
 def tf_propagate1(center, error_range, equation, error_row, bias_row):
 	#(784,512)*(100,784,1)->(100,784,512)->(100,512)
-	l1 = tf.reduce_sum(tf.abs(equation)*tf.expand_dims(error_range, axis=-1), axis=1)
+	l1 = tf.reduce_sum(tf.abs(equation)*\
+			tf.expand_dims(error_range, axis=-1), axis=1)
 	upper = center+l1+bias_row+tf.reduce_sum(error_row*\
 			tf.cast(tf.greater(error_row,0), tf.float32),axis=1)
 
 	lower = center-l1+bias_row+tf.reduce_sum(error_row*\
 			tf.cast(tf.less(error_row,0), tf.float32), axis=1)
 	
-	appr_condition = tf.cast(tf.logical_and(tf.less(lower,0),tf.greater(upper,0)), tf.float32)
+	appr_condition = tf.cast(tf.logical_and(tf.less(lower,0),\
+						tf.greater(upper,0)), tf.float32)
 	
 	mask = appr_condition*((upper)/(upper-lower+0.000001))
 	mask = mask + 1 - appr_condition
@@ -65,7 +67,8 @@ def tf_propagate1(center, error_range, equation, error_row, bias_row):
 def conv1_graph(w_dict):
 	tf_x = tf.placeholder(tf.float32, shape = [None, 784])
 	tf_x = tf.reshape(tf_x, [-1, 28, 28, 1])
-	tf_conv1 = tf.nn.conv2d(tf_x, w_dict["w_conv1"], strides=[1,1,1,1], padding='SAME')+w_dict["b_conv1"]
+	tf_conv1 = tf.nn.conv2d(tf_x, w_dict["w_conv1"],\
+				strides=[1,1,1,1], padding='SAME')+w_dict["b_conv1"]
 	tf_conv1 = tf.nn.relu(tf_conv1)
 	return tf_x, tf_conv1
 
@@ -91,10 +94,14 @@ def build_tf_graph_whole(w_dict, estep):
 	bias_row = tf.zeros([1,28,28,1], dtype=tf.float32)
 	error_row = tf.zeros([1,28,28,1], dtype=tf.float32)
 
-	center = tf.nn.conv2d(center, w_dict["w_conv1"], strides=[1,1,1,1], padding='SAME')
-	equation = tf.nn.conv2d(equation, w_dict["w_conv1"], strides=[1,1,1,1], padding='SAME')
-	bias_row = tf.nn.conv2d(bias_row, w_dict["w_conv1"], strides=[1,1,1,1], padding='SAME')+w_dict["b_conv1"]
-	error_row = tf.nn.conv2d(error_row, w_dict["w_conv1"], strides=[1,1,1,1], padding='SAME')
+	center = tf.nn.conv2d(center, w_dict["w_conv1"],\
+				strides=[1,1,1,1], padding='SAME')
+	equation = tf.nn.conv2d(equation, w_dict["w_conv1"], \
+				strides=[1,1,1,1], padding='SAME')
+	bias_row = tf.nn.conv2d(bias_row, w_dict["w_conv1"],\
+				strides=[1,1,1,1], padding='SAME')+w_dict["b_conv1"]
+	error_row = tf.nn.conv2d(error_row, w_dict["w_conv1"],\
+				strides=[1,1,1,1], padding='SAME')
 	center_shape = tf.shape(center)
 	equation_shape = tf.shape(equation)
 	bias_shape = tf.shape(bias_row)
@@ -108,7 +115,8 @@ def build_tf_graph_whole(w_dict, estep):
 	bias_row = tf.reshape(bias_row, [1, n])
 
 	upper, lower, center, equation, error_row, bias_row=\
-			tf_propagate1(center, error_range, equation, error_row, bias_row)
+			tf_propagate1(center, error_range,\
+			equation, error_row, bias_row)
 
 	# batch_size, 14,14,16
 	center = tf.reshape(center, center_shape)
@@ -135,23 +143,29 @@ def build_tf_graph_whole(w_dict, estep):
 	bias_row = tf.gather(bias_row, tf_mask_seq1)
 	bias_row = tf.reshape(bias_row, [1,14,14,32])
 
-	equation = tf.boolean_mask(equation, tf.reshape(tf_mask1, [28,28,32]), axis=1)
+	equation = tf.boolean_mask(equation,\
+				tf.reshape(tf_mask1, [28,28,32]), axis=1)
 	equation = tf.gather(equation, tf_mask_seq1, axis=1)
 	equation = tf.reshape(equation, [784,14,14,32])
 
 	error_n = tf.shape(error_row)[0]
 
-	error_row = tf.boolean_mask(error_row, tf.reshape(tf_mask1, [28,28,32]), axis=1)
+	error_row = tf.boolean_mask(error_row,\
+				tf.reshape(tf_mask1, [28,28,32]), axis=1)
 	error_row = tf.gather(error_row, tf_mask_seq1, axis=1)
 	error_row = tf.reshape(error_row, [error_n, 14,14,32])
 
 
 	
 	# conv2_graph1
-	center = tf.nn.conv2d(center, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')
-	equation = tf.nn.conv2d(equation, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')
-	bias_row = tf.nn.conv2d(bias_row, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')+w_dict["b_conv2"]
-	error_row = tf.nn.conv2d(error_row, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')
+	center = tf.nn.conv2d(center, w_dict["w_conv2"],\
+				strides=[1,1,1,1], padding='SAME')
+	equation = tf.nn.conv2d(equation, w_dict["w_conv2"],\
+				strides=[1,1,1,1], padding='SAME')
+	bias_row = tf.nn.conv2d(bias_row, w_dict["w_conv2"],\
+				strides=[1,1,1,1], padding='SAME')+w_dict["b_conv2"]
+	error_row = tf.nn.conv2d(error_row, w_dict["w_conv2"],\
+				strides=[1,1,1,1], padding='SAME')
 	center_shape = tf.shape(center)
 	equation_shape = tf.shape(equation)
 	bias_shape = tf.shape(bias_row)
@@ -191,13 +205,15 @@ def build_tf_graph_whole(w_dict, estep):
 	bias_row = tf.gather(bias_row, tf_mask_seq2)
 	bias_row = tf.reshape(bias_row, [1,7,7,64])
 
-	equation = tf.boolean_mask(equation, tf.reshape(tf_mask2, [14,14,64]), axis=1)
+	equation = tf.boolean_mask(equation,\
+				tf.reshape(tf_mask2, [14,14,64]), axis=1)
 	equation = tf.gather(equation, tf_mask_seq2, axis=1)
 	equation = tf.reshape(equation, [784,7,7,64])
 
 	error_n = tf.shape(error_row)[0]
 
-	error_row = tf.boolean_mask(error_row, tf.reshape(tf_mask2, [14,14,64]), axis=1)
+	error_row = tf.boolean_mask(error_row,\
+				tf.reshape(tf_mask2, [14,14,64]), axis=1)
 	error_row = tf.gather(error_row, tf_mask_seq2, axis=1)
 	error_row = tf.reshape(error_row, [error_n, 7,7,64])
 
@@ -210,7 +226,8 @@ def build_tf_graph_whole(w_dict, estep):
 	n = 7*7*64
 	center = tf.reshape(center, [1, n])
 	equation = tf.reshape(equation,[784, n])
-	error_row = tf.reshape(error_row, [tf.cast(error_shape[0], tf.int32), n])
+	error_row = tf.reshape(error_row,\
+			[tf.cast(error_shape[0], tf.int32), n])
 	bias_row = tf.reshape(bias_row, [1, n])
 
 	center = tf.matmul(center, w_dict["w_fc1"])
@@ -222,17 +239,20 @@ def build_tf_graph_whole(w_dict, estep):
 
 	center = tf.reshape(center, [1, n])
 	equation = tf.reshape(equation,[1, 784, n])
-	error_row = tf.reshape(error_row, [1, tf.cast(error_shape[0], tf.int32), n])
+	error_row = tf.reshape(error_row,\
+			[1, tf.cast(error_shape[0], tf.int32), n])
 	bias_row = tf.reshape(bias_row, [1, n])
 
 	upper, lower, center, equation, error_row, bias_row=\
-			tf_propagate1(center, error_range, equation, error_row, bias_row)
+			tf_propagate1(center, error_range,\
+			equation, error_row, bias_row)
 
 	error_shape = tf.shape(error_row)
 
 	center = tf.reshape(center, [1, n])
 	equation = tf.reshape(equation,[784, n])
-	error_row = tf.reshape(error_row, [tf.cast(error_shape[1], tf.int32), n])
+	error_row = tf.reshape(error_row,\
+			[tf.cast(error_shape[1], tf.int32), n])
 	bias_row = tf.reshape(bias_row, [1, n])
 
 	center = tf.matmul(center, w_dict["w_fc2"])
@@ -243,7 +263,8 @@ def build_tf_graph_whole(w_dict, estep):
 	n = 10
 	center = tf.reshape(center, [1, n])
 	equation = tf.reshape(equation,[1, 784, n])
-	error_row = tf.reshape(error_row, [1, tf.cast(error_shape[1], tf.int32), n])
+	error_row = tf.reshape(error_row,\
+			[1, tf.cast(error_shape[1], tf.int32), n])
 	bias_row = tf.reshape(bias_row, [1, n])
 	
 	
@@ -253,10 +274,14 @@ def build_tf_graph_whole(w_dict, estep):
 	error_row_t = error_row[0:1, :, tf_y1[0]]
 	
 	for i in range(1,1):
-		center_t = tf.concat([center_t, center[i:i+1, tf_y1[i]]], axis=0)
-		equation_t = tf.concat([equation_t, equation[i:i+1,:, tf_y1[i]]], axis=0)
-		bias_row_t = tf.concat([bias_row_t, bias_row[i:i+1, tf_y1[i]]], axis=0)
-		error_row_t = tf.concat([error_row_t, error_row[i:i+1,:, tf_y1[i]]], axis=0)
+		center_t = tf.concat([center_t,\
+				center[i:i+1, tf_y1[i]]], axis=0)
+		equation_t = tf.concat([equation_t,\
+				equation[i:i+1,:, tf_y1[i]]], axis=0)
+		bias_row_t = tf.concat([bias_row_t,\
+				bias_row[i:i+1, tf_y1[i]]], axis=0)
+		error_row_t = tf.concat([error_row_t,\
+				error_row[i:i+1,:, tf_y1[i]]], axis=0)
 
 	center = center-tf.expand_dims(center_t, axis=-1)
 	equation = equation-tf.expand_dims(equation_t, axis=-1)
@@ -266,16 +291,20 @@ def build_tf_graph_whole(w_dict, estep):
 
 	#tmp = center
 	upper, lower, center, equation, error_row, bias_row =\
-				tf_propagate1(center, error_range, equation, error_row, bias_row)
+				tf_propagate1(center, error_range, equation,\
+				error_row, bias_row)
 
 
 	
-	return tf_x1, tf_y1, tf_mask1, tf_mask2, tf_mask_seq1, tf_mask_seq2, estep_decay, upper, lower, center, equation, error_row, bias_row
+	return tf_x1, tf_y1, tf_mask1, tf_mask2, tf_mask_seq1,\
+			tf_mask_seq2, estep_decay, upper, lower, center,\
+			equation, error_row, bias_row
 
 
 def conv2_graph(w_dict):
 	tf_max1 = tf.placeholder(tf.float32, shape = [None, 14, 14, 32])
-	tf_conv2 = tf.nn.conv2d(tf_max1, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')+w_dict["b_conv2"]
+	tf_conv2 = tf.nn.conv2d(tf_max1, w_dict["w_conv2"],\
+			strides=[1,1,1,1], padding='SAME')+w_dict["b_conv2"]
 	tf_conv2 = tf.nn.relu(tf_conv2)
 	return tf_max1, tf_conv2
 
@@ -286,10 +315,14 @@ def conv2_graph1(w_dict, estep, error_range):
 	error_rowi = tf.placeholder(tf.float32, shape=[None, 14, 14, 32])
 	bias_rowi = tf.placeholder(tf.float32, shape=[1, 14, 14, 32])
 
-	center = tf.nn.conv2d(centeri, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')
-	equation = tf.nn.conv2d(equationi, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')
-	bias_row = tf.nn.conv2d(bias_rowi, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')+w_dict["b_conv2"]
-	error_row = tf.nn.conv2d(error_rowi, w_dict["w_conv2"], strides=[1,1,1,1], padding='SAME')
+	center = tf.nn.conv2d(centeri, w_dict["w_conv2"],\
+			strides=[1,1,1,1], padding='SAME')
+	equation = tf.nn.conv2d(equationi, w_dict["w_conv2"],\
+			strides=[1,1,1,1], padding='SAME')
+	bias_row = tf.nn.conv2d(bias_rowi, w_dict["w_conv2"],\
+			strides=[1,1,1,1], padding='SAME')+w_dict["b_conv2"]
+	error_row = tf.nn.conv2d(error_rowi, w_dict["w_conv2"],\
+			strides=[1,1,1,1], padding='SAME')
 	center_shape = tf.shape(center)
 	equation_shape = tf.shape(equation)
 	bias_shape = tf.shape(bias_row)
@@ -317,7 +350,9 @@ def conv2_graph1(w_dict, estep, error_range):
 	error_row = tf.reshape(error_row, [1*\
 				tf.shape(error_row)[1],error_shape[1],\
 				error_shape[2], 64])
-	return upper, lower, center, equation, error_row, bias_row, centeri, equationi, error_rowi, bias_rowi
+	return upper, lower, center, equation,\
+		error_row, bias_row, centeri, equationi,\
+		error_rowi, bias_rowi
 
 
 def tf_fc(w_dict):
@@ -341,7 +376,8 @@ def tf_fc1(w_dict, estep, error_range):
 	n = 7*7*64
 	center = tf.reshape(centeri, [1, n])
 	equation = tf.reshape(equationi,[784, n])
-	error_row = tf.reshape(error_rowi, [tf.cast(error_shape[0], tf.int32), n])
+	error_row = tf.reshape(error_rowi,\
+			[tf.cast(error_shape[0], tf.int32), n])
 	bias_row = tf.reshape(bias_rowi, [1, n])
 
 	center = tf.matmul(center, w_dict["w_fc1"])
@@ -353,17 +389,20 @@ def tf_fc1(w_dict, estep, error_range):
 
 	center = tf.reshape(center, [1, n])
 	equation = tf.reshape(equation,[1, 784, n])
-	error_row = tf.reshape(error_row, [1, tf.cast(error_shape[0], tf.int32), n])
+	error_row = tf.reshape(error_row, [1,\
+			tf.cast(error_shape[0], tf.int32), n])
 	bias_row = tf.reshape(bias_row, [1, n])
 
 	upper, lower, center, equation, error_row, bias_row=\
-			tf_propagate1(center, error_range, equation, error_row, bias_row)
+			tf_propagate1(center, error_range,\
+			equation, error_row, bias_row)
 
 	error_shape = tf.shape(error_row)
 
 	center = tf.reshape(center, [1, n])
 	equation = tf.reshape(equation,[784, n])
-	error_row = tf.reshape(error_row, [tf.cast(error_shape[1], tf.int32), n])
+	error_row = tf.reshape(error_row,\
+			[tf.cast(error_shape[1], tf.int32), n])
 	bias_row = tf.reshape(bias_row, [1, n])
 
 	center = tf.matmul(center, w_dict["w_fc2"])
@@ -374,7 +413,8 @@ def tf_fc1(w_dict, estep, error_range):
 	n = 10
 	center = tf.reshape(center, [1, n])
 	equation = tf.reshape(equation,[1, 784, n])
-	error_row = tf.reshape(error_row, [1, tf.cast(error_shape[1], tf.int32), n])
+	error_row = tf.reshape(error_row,\
+			[1, tf.cast(error_shape[1], tf.int32), n])
 	bias_row = tf.reshape(bias_row, [1, n])
 	
 	center_t = center[0:1, tf_y1[0]]
@@ -383,10 +423,14 @@ def tf_fc1(w_dict, estep, error_range):
 	error_row_t = error_row[0:1, :, tf_y1[0]]
 	
 	for i in range(1,1):
-		center_t = tf.concat([center_t, center[i:i+1, tf_y1[i]]], axis=0)
-		equation_t = tf.concat([equation_t, equation[i:i+1,:, tf_y1[i]]], axis=0)
-		bias_row_t = tf.concat([bias_row_t, bias_row[i:i+1, tf_y1[i]]], axis=0)
-		error_row_t = tf.concat([error_row_t, error_row[i:i+1,:, tf_y1[i]]], axis=0)
+		center_t = tf.concat([center_t,\
+				center[i:i+1, tf_y1[i]]], axis=0)
+		equation_t = tf.concat([equation_t,\
+				equation[i:i+1,:, tf_y1[i]]], axis=0)
+		bias_row_t = tf.concat([bias_row_t,\
+				bias_row[i:i+1, tf_y1[i]]], axis=0)
+		error_row_t = tf.concat([error_row_t,\
+				error_row[i:i+1,:, tf_y1[i]]], axis=0)
 
 	center = center-tf.expand_dims(center_t, axis=-1)
 	equation = equation-tf.expand_dims(equation_t, axis=-1)
@@ -395,9 +439,12 @@ def tf_fc1(w_dict, estep, error_range):
 	
 	#tmp = center
 	upper, lower, center, equation, error_row, bias_row =\
-				tf_propagate1(center, error_range, equation, error_row, bias_row)
+				tf_propagate1(center, error_range,\
+				equation, error_row, bias_row)
 
-	return tf_y1, upper, lower, center, equation, error_row, bias_row, centeri, equationi, error_rowi, bias_rowi
+	return tf_y1, upper, lower, center, equation,\
+		error_row, bias_row, centeri, equationi,\
+		error_rowi, bias_rowi
 
 
 
@@ -413,17 +460,35 @@ def build_tf_graph(w_dict):
 	return tf_x, tf_conv1, tf_max1, tf_conv2, tf_max2, tf_pre_softmax
 
 def build_tf_graph1(w_dict, estep):
-	tf_x1, error_range, estep_decay, upper, lower, center, equation, error_row, bias_row = conv1_graph1(w_dict, estep)
+	tf_x1, error_range, estep_decay, upper, lower, center,\
+				 equation, error_row, bias_row =\
+				 conv1_graph1(w_dict, estep)
+
 	param_conv1 = [center, equation, error_row, bias_row]
-	upper, lower, center_conv2, equation_conv2, error_row_conv2, bias_row_conv2, center_conv2_input, equation_conv2_input, error_row_conv2_input, bias_row_conv2_input = conv2_graph1(w_dict, estep, error_range)
-	param_conv2 = [center_conv2, equation_conv2, error_row_conv2, bias_row_conv2]
-	param_conv2_input = [center_conv2_input, equation_conv2_input, error_row_conv2_input, bias_row_conv2_input]
+
+	upper, lower, center_conv2, equation_conv2, error_row_conv2,\
+			bias_row_conv2, center_conv2_input, equation_conv2_input,\
+			error_row_conv2_input, bias_row_conv2_input =\
+			conv2_graph1(w_dict, estep, error_range)
+
+	param_conv2 = [center_conv2, equation_conv2,\
+			error_row_conv2, bias_row_conv2]
+
+	param_conv2_input = [center_conv2_input,\
+			equation_conv2_input, error_row_conv2_input,\
+			bias_row_conv2_input]
 	
-	tf_y1, upper, lower, center_fc, equation_fc, error_row_fc, bias_row_fc, center_fc_input, equation_fc_input, error_row_fc_input, bias_row_fc_input = tf_fc1(w_dict, estep, error_range)
+	tf_y1, upper, lower, center_fc, equation_fc,\
+			error_row_fc, bias_row_fc, center_fc_input,\
+			equation_fc_input, error_row_fc_input,\
+			bias_row_fc_input = tf_fc1(w_dict, estep, error_range)
 	param_fc = [center_fc, equation_fc, error_row_fc, bias_row_fc]
-	param_fc_input = [center_fc_input, equation_fc_input, error_row_fc_input, bias_row_fc_input]
+	param_fc_input = [center_fc_input, equation_fc_input,\
+			error_row_fc_input, bias_row_fc_input]
 	
-	return tf_x1, tf_y1, error_range, estep_decay, upper, lower, param_conv1, param_conv2, param_conv2_input, param_fc, param_fc_input
+	return tf_x1, tf_y1, error_range, estep_decay,\
+		upper, lower, param_conv1, param_conv2,\
+		param_conv2_input, param_fc, param_fc_input
 
 def trasfer_index(a):
 	n = a.shape[0]
@@ -560,16 +625,25 @@ def np_max1(maxi, upper, lower, center, equation, error_row, bias_row):
 	return centero
 '''
 
-def propagate_whole(sess, w_dict, x, y, tf_graph_param_whole, naive_graph, ed):
 
-	o, mask1, mask2, mask_seq1, mask_seq2 = propagate(sess, w_dict, x, naive_graph)
+def propagate_whole(sess, w_dict, x, y,\
+			tf_graph_param_whole, naive_graph, ed):
+
+	o, mask1, mask2, mask_seq1, mask_seq2 =\
+			propagate(sess, w_dict, x, naive_graph)
 	#print np.sum(o)
 
-	tf_x1, tf_y1, tf_mask1, tf_mask2, tf_mask_seq1, tf_mask_seq2, estep_decay, upper, lower, center, equation, error_row, bias_row = tf_graph_param_whole
-	input_dict = {tf_x1:x, tf_y1:y, tf_mask1:mask1, tf_mask2:mask2, tf_mask_seq1:mask_seq1, tf_mask_seq2:mask_seq2, estep_decay:ed}
-	c, u, e, l, b = sess.run([center, upper, equation, lower, bias_row], feed_dict=input_dict)
+	tf_x1, tf_y1, tf_mask1, tf_mask2, tf_mask_seq1,\
+			tf_mask_seq2, estep_decay, upper, lower,\
+			center, equation, error_row, bias_row = tf_graph_param_whole
+	input_dict = {tf_x1:x, tf_y1:y, tf_mask1:mask1,\
+			tf_mask2:mask2, tf_mask_seq1:mask_seq1,\
+			tf_mask_seq2:mask_seq2, estep_decay:ed}
+	c, u, e, l, b = sess.run([center, upper, equation, lower, bias_row],\
+				 feed_dict=input_dict)
 	
 	return e, u, l
+
 
 def propagate(sess, w_dict, x, naive_graph):
 	tf_x, tf_conv1, tf_max1, tf_conv2, tf_max2, tf_pre_softmax = naive_graph
@@ -582,17 +656,28 @@ def propagate(sess, w_dict, x, naive_graph):
 	#print o, mask1, mask2
 	return o, mask1, mask2, mask_seq1, mask_seq2
 
+
 def propagate1(sess, w_dict, x, y, tf_graph_param1, ed):
-	tf_x1, tf_y1, error_range, estep_decay, upper, lower, param_conv1, param_conv2, param_conv2_input, param_fc, param_fc_input = tf_graph_param1
+	tf_x1, tf_y1, error_range, estep_decay, upper,\
+			lower, param_conv1, param_conv2, param_conv2_input,\
+			param_fc, param_fc_input = tf_graph_param1
 	#x = x.reshape(-1,28,28,1)
 	#o = sess.run(lower, feed_dict={tf_x1:x})
 	param = sess.run(param_conv1, feed_dict={tf_x1:x, estep_decay:ed})
 	param = np_max2(param[0],param[1],param[2],param[3])
-	conv2_dict = {tf_x1:x, estep_decay:ed, param_conv2_input[0]:param[0], param_conv2_input[1]:param[1], param_conv2_input[2]:param[2], param_conv2_input[3]:param[3]}
+
+	conv2_dict = {tf_x1:x, estep_decay:ed,\
+			param_conv2_input[0]:param[0],\
+			param_conv2_input[1]:param[1],\
+			param_conv2_input[2]:param[2],\
+			param_conv2_input[3]:param[3]}
+
 	param = sess.run(param_conv2, feed_dict=conv2_dict)
 	param = np_max2(param[0],param[1],param[2],param[3])
 
-	fc_dict = {tf_x1:x, tf_y1:y, estep_decay:ed, param_fc_input[0]:param[0], param_fc_input[1]:param[1], param_fc_input[2]:param[2], param_fc_input[3]:param[3]}
+	fc_dict = {tf_x1:x, tf_y1:y, estep_decay:ed,\
+			param_fc_input[0]:param[0], param_fc_input[1]:param[1],\
+			param_fc_input[2]:param[2], param_fc_input[3]:param[3]}
 	param = sess.run(param_fc+[upper,lower], feed_dict=fc_dict)
 	return param[1], param[-2], param[-1]
 
@@ -652,25 +737,12 @@ if __name__ == '__main__':
 		x = mnist.test.images[:1, :]
 		y = mnist.test.labels[:1]
 
-
 		x_dict = {model.x_input: x,
 				  	model.y_input: y}
 
 
 		y_hat = sess.run(model.pre_softmax, feed_dict=x_dict)
 		print np.sum(y_hat), y_hat
-		'''
-		for ibatch in range(10):
-			print (ibatch)
-			bstart = ibatch
-			bend = bstart+1
-
-			x_batch = mnist.test.images[bstart:bend, :]
-			y_batch = mnist.test.labels[bstart:bend]
-
-	  		dict_nat = {model.x_input: x_batch,
-				  	model.y_input: y_batch}
-		'''
 
 		w = sess.run(weights)
 		w_dict = {"w_conv1":w[0], "b_conv1":w[1],\
@@ -680,20 +752,11 @@ if __name__ == '__main__':
 		for wi in w:
 			print wi.shape
 
-		
-
-
-		print mask1.shape, mask2.shape
-
 		naive_graph = build_tf_graph(w_dict)
 		tf_graph_param_whole = build_tf_graph_whole(w_dict, 0)
 
-		print propagate_whole(sess, w_dict, x, y, tf_graph_param_whole, naive_graph, 1)
-		'''
-		tf_graph_param1 = build_tf_graph1(w_dict, 0)
-		print propagate1(sess, w_dict, x, y, tf_graph_param1, 1)
-		'''
-		exit()
+		print propagate_whole(sess, w_dict, x, y,\
+			tf_graph_param_whole, naive_graph, 1)
 
 
 

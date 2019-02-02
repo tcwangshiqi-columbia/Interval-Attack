@@ -9,7 +9,7 @@ from model import Model
 import argparse
 import time
 
-from ia1 import *
+from symbolic_interval import *
 
 
 def cw_attack(sess, model, x, y, config, x_nat=None):
@@ -383,10 +383,7 @@ if __name__ == '__main__':
 		# tf_x1, tf_y1, error_range, estep_decay, upper, lower, param_conv1, param_conv2, param_conv2_input, param_fc, param_fc_input
 		naive_graph = build_tf_graph(w_dict)
 		tf_graph_param_whole = build_tf_graph_whole(w_dict, args.estep)
-		'''
-		upper, lower, estep_decay, tmp =\
-				model.tf_interval1(args.estep, args.batch_size, config)
-		'''
+
 		d_xent = tf.nn.sparse_softmax_cross_entropy_with_logits(
 			labels=model.y_input, logits=tf_graph_param_whole[7])
 
