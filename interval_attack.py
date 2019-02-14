@@ -431,9 +431,25 @@ if __name__ == '__main__':
 				
 
 			elif(args.method==CW):
-				x_adv, y_adv = cw_attack(sess, model, x, y, config)
+
+				x_adv = np.copy(x)
+				bool_list = np.zeros(x.shape[0]).astype(np.bool)
+				for rs in range(args.random):
+					print "random starts:", rs
+					#x_adv = x_adv + np.random.uniform(-config['epsilon'], config['epsilon'], x.shape)
+					x_adv = (x + np.random.uniform(-config['epsilon'], config['epsilon'], x.shape))*(1.0-bool_list).reshape(-1,1)+x_adv*bool_list.reshape(-1,1)
+					x_adv = np.clip(x_adv, 0, 1)
+					x_adv, y_adv = cw_attack(sess, model, x_adv, y, config, x_nat=x)
+
+					p = sess.run(model.y_pred, feed_dict={
+							model.x_input: x_adv,
+							model.y_input: y
+						})
+					bool_list = np.logical_or(bool_list, np.not_equal(p, y))
+					print "adv_acc:", (1.0-np.sum(bool_list.astype(np.float32))/x.shape[0])*100.0
+
 				acc = eval(x, y, sess, model)
-				adv_acc = eval(x_adv, y_adv, sess, model)
+				adv_acc = eval(x_adv, y, sess, model)
 
 				print "adv_acc:", adv_acc, " acc:", acc
 
