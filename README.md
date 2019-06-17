@@ -1,8 +1,8 @@
 # Interval Attack (adversarial ML)
 
-Currently, most first-order adversarial attacks like PGD, CW, or DAA maximize customized loss function to find adversarial examples. To maximize their chances, all of them repeat their attack algorithm from different random starting points. We propose a new first-order attack that leverages symbolic interval analysis to locate interesting regions that are more likely to contain adversarial examples and then use them as starting points to maximize the loss function. We found that interval attacks can provide significant improvement in attack success rate against popular defense models. More details about the interval attack can be found at https://arxiv.org/abs/1811.02625.  
+Currently, most first-order adversarial attacks like PGD, CW, or DAA maximize customized loss function to find adversarial examples. To maximize their chances, all of them repeat their attack algorithm from different random starting points. We propose a new first-order attack that leverages symbolic interval analysis to locate interesting regions that are more likely to contain adversarial examples and then use them as starting points to maximize the loss function. We found that interval attacks can provide significant improvement in attack success rate against popular defense models. More details about the interval attack can be found at https://arxiv.org/pdf/1906.02282.pdf.
 
-Note that symbolic interval analysis is a sound network output approximation method for given input ranges. The details of symbolic interval analysis can be found in our [Neurify](https://arxiv.org/abs/1809.08098) (NeurIPS 2018) and [ReluVal](https://www.cs.columbia.edu/~tcwangshiqi/docs/reluval.pdf) (Usenix Security 2018) papers.
+Note that symbolic interval analysis is a sound network output approximation method for given input ranges. The details of symbolic interval analysis can be found in our [Neurify](https://arxiv.org/abs/1809.08098) (NeurIPS 2018) and [ReluVal](https://www.cs.columbia.edu/~tcwangshiqi/docs/reluval.pdf) (Usenix Security 2018) papers. Also, symbolic interval analysis can be directly incorporated into training process and can efficiently train state-of-the-art verifiable robust networks. Our scalable verifiably robust training method is called MixTrain and more details can be found at https://arxiv.org/abs/1811.02625.
 
 
 
@@ -22,11 +22,11 @@ python interval_attack.py
 
 ## Citing MixTrain
 ```
-@article{wang2018mixtrain,
-  title={MixTrain: Scalable Training of Formally Robust Neural Networks},
+@article{wang2019enhancing,
+  title={Enhancing Gradient-based Attacks with Symbolic Intervals},
   author={Wang, Shiqi and Chen, Yizheng and Abdou, Ahmed and Jana, Suman},
-  journal={arXiv preprint arXiv:1811.02625},
-  year={2018}
+  journal={arXiv preprint arXiv:1906.02282},
+  year={2019}
 }
 ```
 
